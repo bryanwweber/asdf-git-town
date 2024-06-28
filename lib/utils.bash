@@ -6,6 +6,7 @@ set -euo pipefail
 GH_REPO="https://github.com/git-town/git-town/"
 TOOL_NAME="git-town"
 TOOL_TEST="git-town --help"
+PLATFORM=$(uname | tr '[:upper:]' '[:lower:]')
 
 fail() {
 	echo -e "asdf-$TOOL_NAME: $*"
@@ -31,18 +32,17 @@ list_github_tags() {
 }
 
 list_all_versions() {
-	# TODO: Adapt this. By default we simply list the tag names from GitHub releases.
-	# Change this function if git-town has other means of determining installable versions.
 	list_github_tags
 }
 
 download_release() {
 	local version filename url
 	version="$1"
-	filename="$2"
+	ar="$2"
+	filename="$3"
 
-	# TODO: Adapt the release URL convention for git-town
-	url="$GH_REPO/archive/v${version}.tar.gz"
+	# https://github.com/git-town/git-town/releases/download/v14.2.3/git-town_linux_intel_64.tar.gz
+	url="$GH_REPO/releases/download/v${version}/git-town_${PLATFORM}_${ar}.tar.gz"
 
 	echo "* Downloading $TOOL_NAME release $version..."
 	curl "${curl_opts[@]}" -o "$filename" -C - "$url" || fail "Could not download $url"
@@ -59,7 +59,8 @@ install_version() {
 
 	(
 		mkdir -p "$install_path"
-		cp -r "$ASDF_DOWNLOAD_PATH"/* "$install_path"
+		cp -r "$ASDF_DOWNLOAD_PATH"/${TOOL_NAME} "$install_path"
+		chmod +x "$install_path"/${TOOL_NAME}
 
 		# TODO: Assert git-town executable exists.
 		local tool_cmd
