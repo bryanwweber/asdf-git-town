@@ -7,6 +7,9 @@ GH_REPO="https://github.com/git-town/git-town/"
 TOOL_NAME="git-town"
 TOOL_TEST="git-town --help"
 PLATFORM=$(uname | tr '[:upper:]' '[:lower:]')
+if [ "$PLATFORM" == "darwin" ]; then
+	PLATFORM="macos"
+fi
 
 fail() {
 	echo -e "asdf-$TOOL_NAME: $*"
